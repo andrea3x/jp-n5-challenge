@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N5 Challenge</title>
+  <link rel="icon" href="/img/ninja.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hero">
+    <img class="ninja" src="/img/ninja.svg" alt="">
+    <div class="bubble" id="bubble">Connecting…</div>
+  </header>
+
+  <main>
+    <p id="error" class="error" hidden></p>
+
+    <section id="view-join" class="panel" hidden>
+      <form id="join-form">
+        <label class="field">
+          <span>Your name</span>
+          <input id="join-name" maxlength="20" required autocomplete="nickname">
+        </label>
+        <button type="submit" class="btn">Join game</button>
+      </form>
+    </section>
+
+    <section id="view-lobby" class="panel" hidden>
+      <div class="share">
+        <input id="share-link" readonly>
+        <button type="button" id="copy-link" class="btn btn-small">Copy</button>
+      </div>
+      <ul id="settings-summary" class="summary"></ul>
+      <h2>Players <span id="player-count"></span></h2>
+      <ul id="lobby-players" class="players"></ul>
+      <button type="button" id="start" class="btn" hidden>Start</button>
+      <p id="lobby-wait" class="muted" hidden>Waiting for the host to start the game…</p>
+    </section>
+
+    <section id="view-countdown" class="countdown" hidden>
+      <div id="countdown-number">3</div>
+    </section>
+
+    <section id="view-question" class="quiz" hidden>
+      <div class="quiz-meta">
+        <span id="progress"></span>
+        <span id="score"></span>
+      </div>
+      <div id="timer" class="timer"><div id="timer-bar"></div></div>
+      <div id="word" class="word"></div>
+      <div id="reading" class="reading"></div>
+      <div id="choices" class="choices"></div>
+    </section>
+
+    <section id="view-waiting" class="panel" hidden>
+      <h2>Progress</h2>
+      <ul id="progress-list" class="progress-list"></ul>
+      <button type="button" id="end-game" class="btn btn-secondary" hidden>End game now</button>
+    </section>
+
+    <section id="view-podium" hidden>
+      <div id="podium" class="podium"></div>
+      <table class="ranking">
+        <thead><tr><th>#</th><th>Player</th><th>Points</th><th>Correct</th></tr></thead>
+        <tbody id="ranking-body"></tbody>
+      </table>
+      <div class="actions">
+        <button type="button" id="play-again" class="btn" hidden>Play again</button>
+        <a href="/" class="link">New game &gt;&gt;</a>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/js/room.js"></script>
+</body>
+</html>

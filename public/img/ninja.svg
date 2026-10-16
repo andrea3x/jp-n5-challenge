@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 170" role="img" aria-label="Ninja">
+  <!-- ponytail -->
+  <path d="M84 22 q22 -14 26 6 q-8 -4 -14 6 q8 4 4 16 q-10 -10 -18 -14z" fill="#222"/>
+  <circle cx="86" cy="26" r="5" fill="#c0392b"/>
+  <!-- legs and feet -->
+  <rect x="44" y="134" width="12" height="22" rx="3" fill="#3d2163"/>
+  <rect x="64" y="134" width="12" height="22" rx="3" fill="#3d2163"/>
+  <rect x="40" y="153" width="18" height="9" rx="4" fill="#2a1645"/>
+  <rect x="62" y="153" width="18" height="9" rx="4" fill="#2a1645"/>
+  <!-- body -->
+  <path d="M36 98 q24 -14 48 0 l4 40 q-28 6 -56 0z" fill="#5b2f91"/>
+  <rect x="34" y="118" width="52" height="7" rx="2" fill="#2a1645"/>
+  <!-- arms -->
+  <path d="M38 100 q-8 14 14 18" stroke="#5b2f91" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <path d="M82 100 q8 14 -14 18" stroke="#5b2f91" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <!-- clasped hands -->
+  <rect x="54" y="98" width="12" height="22" rx="5" fill="#f7d2b5"/>
+  <line x1="60" y1="100" x2="60" y2="118" stroke="#d9a989" stroke-width="1.2"/>
+  <!-- head -->
+  <circle cx="60" cy="52" r="34" fill="#222"/>
+  <ellipse cx="60" cy="60" rx="27" ry="25" fill="#f7d2b5"/>
+  <!-- bangs -->
+  <path d="M32 54 q4 -30 28 -30 q24 0 28 30 q-8 -10 -16 -12 q-4 6 -12 6 q-8 0 -12 -6 q-8 2 -16 12z" fill="#222"/>
+  <!-- eyebrows and eyes -->
+  <path d="M42 50 l10 4" stroke="#222" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M78 50 l-10 4" stroke="#222" stroke-width="2.4" stroke-linecap="round"/>
+  <ellipse cx="49" cy="60" rx="3.2" ry="4.2" fill="#222"/>
+  <ellipse cx="71" cy="60" rx="3.2" ry="4.2" fill="#222"/>
+  <circle cx="50" cy="58.5" r="1" fill="#fff"/>
+  <circle cx="72" cy="58.5" r="1" fill="#fff"/>
+  <!-- mask -->
+  <path d="M33 66 q27 6 54 0 q2 18 -8 24 q-19 8 -38 0 q-10 -6 -8 -24z" fill="#5b2f91"/>
+  <path d="M38 86 q22 10 44 0 l2 10 q-24 8 -48 0z" fill="#7a3fb8"/>
+</svg>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>N5 Challenge – New game</title>
+  <link rel="icon" href="/img/ninja.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="hero">
+    <img class="ninja" src="/img/ninja.svg" alt="">
+    <div class="bubble">Set up a new N5 vocabulary challenge!</div>
+  </header>
+
+  <main>
+    <form id="create-form" class="panel">
+      <label class="field">
+        <span>Your name</span>
+        <input id="name" name="name" maxlength="20" required autocomplete="nickname">
+      </label>
+
+      <fieldset class="field">
+        <legend>Number of words</legend>
+        <div id="word-counts" class="segmented"></div>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend>Options</legend>
+        <label class="check"><input type="checkbox" id="speed-scoring" checked> Speed bonus (faster answers score more)</label>
+        <label class="check"><input type="checkbox" id="color-feedback" checked> Show green/red feedback after each answer</label>
+        <label class="check"><input type="checkbox" id="timer-enabled" checked> Time limit per question</label>
+        <label class="inline" id="timer-row">
+          Seconds per question
+          <input type="number" id="timer-seconds" value="5" min="2" max="60" step="1" required>
+        </label>
+      </fieldset>
+
+      <button type="submit" class="btn">Create game</button>
+      <p id="error" class="error" hidden></p>
+    </form>
+  </main>
+
+  <script type="module" src="/js/create.js"></script>
+</body>
+</html>
