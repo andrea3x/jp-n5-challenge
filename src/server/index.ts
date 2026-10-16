@@ -155,6 +155,11 @@ setInterval(() => {
   }
 }, CLEANUP_INTERVAL_MS).unref();
 
+// Rooms live in memory, so there is nothing to flush: exit promptly (e.g. on `docker stop`).
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => io.close(() => process.exit(0)));
+}
+
 httpServer.listen(PORT, () => {
   console.log(`Loaded ${vocabulary.length} words. Listening on http://localhost:${PORT}`);
 });
