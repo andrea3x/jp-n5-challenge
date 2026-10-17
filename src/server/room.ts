@@ -138,10 +138,10 @@ export class Room {
     this.checkFinished();
   }
 
-  start(vocabulary: Word[]): boolean {
+  start(vocabulary: Word[], audioUrls: Map<Word, string>): boolean {
     if (this.phase !== 'lobby' || this.players.length === 0) return false;
     this.touch();
-    this.questions = buildQuestions(vocabulary, this.settings.wordCount);
+    this.questions = buildQuestions(vocabulary, this.settings.wordCount, audioUrls);
     this.players.forEach((p) => p.reset());
     this.finalResults = null;
     this.phase = 'playing';
@@ -175,6 +175,7 @@ export class Room {
       word: q.word,
       reading: q.reading,
       choices: q.choices,
+      audioUrl: this.settings.pronounce ? q.audioUrl : null,
       timeLimitMs: limit,
       remainingMs: limit === null ? null : limit - (now - player.pendingSince),
     };

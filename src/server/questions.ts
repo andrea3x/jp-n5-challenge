@@ -5,11 +5,12 @@ export interface Question {
   reading: string;
   choices: string[];
   answer: number;
+  audioUrl: string | null;
 }
 
 const CHOICES_PER_QUESTION = 4;
 
-export function buildQuestions(vocabulary: Word[], count: number): Question[] {
+export function buildQuestions(vocabulary: Word[], count: number, audioUrls: Map<Word, string>): Question[] {
   return sample(vocabulary, Math.min(count, vocabulary.length)).map((target) => {
     const distractors = sample(
       vocabulary.filter((w) => w !== target),
@@ -21,6 +22,7 @@ export function buildQuestions(vocabulary: Word[], count: number): Question[] {
       reading: target.reading,
       choices,
       answer: choices.indexOf(target.meaning),
+      audioUrl: audioUrls.get(target) ?? null,
     };
   });
 }

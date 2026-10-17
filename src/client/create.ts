@@ -7,6 +7,7 @@ const form = $<HTMLFormElement>('create-form');
 const nameInput = $<HTMLInputElement>('name');
 const speedScoring = $<HTMLInputElement>('speed-scoring');
 const colorFeedback = $<HTMLInputElement>('color-feedback');
+const pronounce = $<HTMLInputElement>('pronounce');
 const timerEnabled = $<HTMLInputElement>('timer-enabled');
 const timerSeconds = $<HTMLInputElement>('timer-seconds');
 const timerRow = $('timer-row');
@@ -33,6 +34,7 @@ form.addEventListener('submit', async (event) => {
     colorFeedback: colorFeedback.checked,
     timerEnabled: timerEnabled.checked,
     timerSeconds: Number(timerSeconds.value),
+    pronounce: pronounce.checked,
   };
 
   const submit = form.querySelector('button')!;

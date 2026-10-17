@@ -15,6 +15,7 @@ export interface GameSettings {
   colorFeedback: boolean;
   timerEnabled: boolean;
   timerSeconds: number;
+  pronounce: boolean;
 }
 
 export type Phase = 'lobby' | 'playing' | 'finished';
@@ -53,6 +54,8 @@ export interface QuestionPayload {
   word: string;
   reading: string;
   choices: string[];
+  /** Pre-generated pronunciation; null when voice is off or no file exists (the client falls back to speech synthesis). */
+  audioUrl: string | null;
   /** Full time limit for the question, null when the timer is disabled. */
   timeLimitMs: number | null;
   /** Time left when the question is delivered (less than the limit after a reconnect). */

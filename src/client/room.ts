@@ -7,6 +7,7 @@ import {
   type RoomState,
   type ServerToClientEvents,
 } from '../shared/protocol.js';
+import { isMuted, setMuted, speak, stopSpeech } from './speech.js';
 import { saveName, saveToken, savedHostKey, savedName, savedToken } from './storage.js';
 
 type View = 'connecting' | 'join' | 'lobby' | 'countdown' | 'question' | 'waiting' | 'podium';
@@ -145,12 +146,13 @@ function showLobby(s: RoomState): void {
   show('lobby', amHost() ? 'Share the link, then press Start when everyone is here!' : 'Waiting for players…');
 
   $<HTMLInputElement>('share-link').value = `${location.origin}/r/${s.roomId}`;
-  const { wordCount, speedScoring, colorFeedback, timerEnabled, timerSeconds } = s.settings;
+  const { wordCount, speedScoring, colorFeedback, timerEnabled, timerSeconds, pronounce } = s.settings;
   $('settings-summary').innerHTML = [
     `${wordCount} words`,
     `Speed bonus: ${speedScoring ? 'on' : 'off'}`,
     `Feedback colors: ${colorFeedback ? 'on' : 'off'}`,
     `Timer: ${timerEnabled ? `${timerSeconds} s` : 'off'}`,
+    `Voice: ${pronounce ? 'on' : 'off'}`,
   ]
     .map((item) => `<li>${item}</li>`)
     .join('');
@@ -228,7 +230,38 @@ function showQuestion(q: QuestionPayload): void {
   });
 
   startTimer(q);
+
+  const pronounce = state?.settings.pronounce ?? false;
+  $('replay').hidden = !pronounce;
+  $('mute').hidden = !pronounce;
+  $('voice-credit').hidden = !pronounce;
+  if (pronounce) speak(q);
+  else stopSpeech();
 }
+
+function renderMuteButton(): void {
+  const btn = $('mute');
+  btn.textContent = isMuted() ? '🔇' : '🔈';
+  btn.title = isMuted() ? 'Unmute voice' : 'Mute voice';
+  btn.setAttribute('aria-label', btn.title);
+}
+
+renderMuteButton();
+
+$('replay').addEventListener('click', () => {
+  if (!current) return;
+  if (isMuted()) {
+    setMuted(false);
+    renderMuteButton();
+  }
+  speak(current);
+});
+
+$('mute').addEventListener('click', () => {
+  setMuted(!isMuted());
+  renderMuteButton();
+  if (!isMuted() && current && !locked) speak(current);
+});
 
 function startTimer(q: QuestionPayload): void {
   const timer = $('timer');
@@ -253,6 +286,7 @@ function submit(choice: number | null): void {
   if (locked || !q || view !== 'question') return;
   locked = true;
   clearTimers();
+  stopSpeech();
 
   const buttons = [...$('choices').querySelectorAll('button')];
   buttons.forEach((b) => (b.disabled = true));
@@ -290,6 +324,7 @@ function submit(choice: number | null): void {
 
 function showWaiting(s: RoomState): void {
   clearTimers();
+  stopSpeech();
   current = null;
   show('waiting', 'Well done! Waiting for the others…');
 
@@ -317,6 +352,7 @@ $('end-game').addEventListener('click', () => {
 
 function showPodium(results: FinalResult[]): void {
   clearTimers();
+  stopSpeech();
   current = null;
   show('podium', 'Results!');
 

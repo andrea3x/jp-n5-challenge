@@ -45,12 +45,18 @@
     <section id="view-question" class="quiz" hidden>
       <div class="quiz-meta">
         <span id="progress"></span>
+        <button type="button" id="mute" class="icon-btn" hidden></button>
         <span id="score"></span>
       </div>
       <div id="timer" class="timer"><div id="timer-bar"></div></div>
-      <div id="word" class="word"></div>
+      <div class="word-row">
+        <div id="word" class="word"></div>
+        <button type="button" id="replay" class="icon-btn" title="Play again" aria-label="Play pronunciation" hidden>🔊</button>
+      </div>
       <div id="reading" class="reading"></div>
       <div id="choices" class="choices"></div>
+      <!-- Credit required by the VOICEVOX voice's terms of use; keep in sync with VOICEVOX_SPEAKER. -->
+      <p id="voice-credit" class="credit" hidden>Voice: VOICEVOX:四国めたん</p>
     </section>
 
     <section id="view-waiting" class="panel" hidden>

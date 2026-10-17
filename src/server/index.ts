@@ -13,6 +13,7 @@ import {
   type ServerToClientEvents,
   type WordCount,
 } from '../shared/protocol.js';
+import { AUDIO_DIR, buildAudioIndex } from './audio.js';
 import { Room, randomId } from './room.js';
 import { loadVocabulary } from './vocabulary.js';
 
@@ -22,11 +23,15 @@ const PUBLIC_DIR = path.join(ROOT, 'public');
 const ROOM_TTL_MS = 2 * 60 * 60 * 1000;
 const CLEANUP_INTERVAL_MS = 10 * 60 * 1000;
 
+const AUDIO_MAX_AGE = '7d';
+
 const vocabulary = loadVocabulary();
+const audioUrls = buildAudioIndex(vocabulary);
 const rooms = new Map<string, Room>();
 
 const app = express();
 app.use(express.json({ limit: '4kb' }));
+app.use('/audio', express.static(AUDIO_DIR, { maxAge: AUDIO_MAX_AGE }));
 app.use(express.static(PUBLIC_DIR, { index: false }));
 
 app.get('/', (_req, res) => res.sendFile(path.join(PUBLIC_DIR, 'index.html')));
@@ -59,6 +64,7 @@ function parseSettings(body: unknown): GameSettings | null {
     colorFeedback: b.colorFeedback !== false,
     timerEnabled: b.timerEnabled !== false,
     timerSeconds,
+    pronounce: b.pronounce !== false,
   };
 }
 
@@ -102,7 +108,7 @@ io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>)
   });
 
   socket.on('start', () => {
-    if (room && isHost() && room.start(vocabulary)) broadcast(room);
+    if (room && isHost() && room.start(vocabulary, audioUrls)) broadcast(room);
   });
 
   socket.on('next', (ack) => {
@@ -161,5 +167,5 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
 }
 
 httpServer.listen(PORT, () => {
-  console.log(`Loaded ${vocabulary.length} words. Listening on http://localhost:${PORT}`);
+  console.log(`Loaded ${vocabulary.length} words (${audioUrls.size} with audio). Listening on http://localhost:${PORT}`);
 });
