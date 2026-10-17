@@ -23,20 +23,50 @@
       <fieldset class="field">
         <legend>Number of words</legend>
         <div id="word-counts" class="segmented"></div>
+        <small class="hint">How many words each player answers. Everyone gets the same words.</small>
       </fieldset>
 
       <fieldset class="field">
         <legend>Options</legend>
-        <label class="check"><input type="checkbox" id="speed-scoring" checked> Speed bonus (faster answers score more)</label>
-        <label class="check"><input type="checkbox" id="color-feedback" checked> Show green/red feedback after each answer</label>
-        <label class="check"><input type="checkbox" id="pronounce" checked> Pronounce each word</label>
-        <label class="check"><input type="checkbox" id="timer-enabled" checked> Time limit per question</label>
-        <label class="inline" id="timer-row">
-          Seconds per question
-          <input type="number" id="timer-seconds" value="5" min="2" max="60" step="1" required>
-        </label>
+        <div class="options">
+          <label class="option">
+            <span class="option-text">
+              <strong>Speed bonus</strong>
+              <small>Correct answers earn up to +100 extra points the faster they come. Off: only correctness counts.</small>
+            </span>
+            <input type="checkbox" role="switch" class="switch" id="speed-scoring" checked>
+          </label>
+          <label class="option">
+            <span class="option-text">
+              <strong>Answer feedback</strong>
+              <small>After each click the answer flashes green (right) or red (wrong). Off: players find out only at the end.</small>
+            </span>
+            <input type="checkbox" role="switch" class="switch" id="color-feedback" checked>
+          </label>
+          <label class="option">
+            <span class="option-text">
+              <strong>Pronunciation</strong>
+              <small>Each word is read aloud. Players can still mute it on their device.</small>
+            </span>
+            <input type="checkbox" role="switch" class="switch" id="pronounce" checked>
+          </label>
+          <div class="option-group">
+            <label class="option">
+              <span class="option-text">
+                <strong>Time limit</strong>
+                <small>Each word must be answered in time, or it counts as wrong.</small>
+              </span>
+              <input type="checkbox" role="switch" class="switch" id="timer-enabled" checked>
+            </label>
+            <div id="timer-row" class="option-extra" role="radiogroup" aria-label="Seconds per word">
+              <div id="timer-choices" class="segmented compact"></div>
+              <small class="hint">seconds per word</small>
+            </div>
+          </div>
+        </div>
       </fieldset>
 
+      <p id="summary" class="summary-line"></p>
       <button type="submit" class="btn">Create game</button>
       <p id="error" class="error" hidden></p>
     </form>

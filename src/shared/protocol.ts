@@ -8,6 +8,8 @@ export const MAX_NAME_LENGTH = 20;
 export const TIMER_MIN_SECONDS = 2;
 export const TIMER_MAX_SECONDS = 60;
 export const DEFAULT_TIMER_SECONDS = 5;
+/** Quick picks offered on the setup screen (all within the MIN–MAX range the server accepts). */
+export const TIMER_CHOICES = [3, 5, 10, 15, 20, 30] as const;
 
 export interface GameSettings {
   wordCount: WordCount;

@@ -98,9 +98,46 @@ input[type="text"], input:not([type]), input[type="number"] {
   border: 1px solid var(--border);
   border-radius: 4px;
 }
-.check { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 4px 0; }
-.inline { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 4px 0 0 26px; }
-.inline input { width: 70px; }
+.hint { font-size: 12px; color: var(--muted); }
+
+/* Setup options: one card per setting, "name + explanation" on the left, switch on the right. */
+.options { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.options > * + * { border-top: 1px solid var(--border); }
+.option { display: flex; align-items: center; gap: 14px; padding: 12px 14px; cursor: pointer; }
+.option:hover { background: #fafafa; }
+.option-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.option-text strong { font-size: 14px; }
+.option-text small { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.option-extra { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 0 14px 12px; }
+
+.switch {
+  appearance: none;
+  flex-shrink: 0;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  margin: 0;
+  border-radius: 11px;
+  background: #ccc;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+.switch:checked { background: var(--blue); }
+.switch:checked::after { transform: translateX(18px); }
+.switch:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.summary-line { font-size: 13px; color: var(--muted); text-align: center; margin: 0; }
 
 .segmented { display: flex; flex-wrap: wrap; gap: 6px; }
 .segmented label {
@@ -113,8 +150,11 @@ input[type="text"], input:not([type]), input[type="number"] {
   color: var(--blue);
   cursor: pointer;
 }
-.segmented input { display: none; }
+/* Visually hidden but still reachable with the keyboard. */
+.segmented input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
 .segmented label:has(input:checked) { background: var(--blue); color: #fff; }
+.segmented:has(input:focus-visible) label:has(input:checked) { outline: 2px solid var(--blue-dark); outline-offset: 2px; }
+.segmented.compact label { flex: 0 0 auto; min-width: 40px; padding: 4px 0; font-size: 13px; }
 
 /* Lobby */
 .share { display: flex; gap: 8px; }
