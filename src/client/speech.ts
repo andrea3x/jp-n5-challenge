@@ -24,9 +24,10 @@ export function stopSpeech(): void {
   if ('speechSynthesis' in window) speechSynthesis.cancel();
 }
 
-export function speak(q: Pick<QuestionPayload, 'audioUrl' | 'reading'>): void {
+/** `force` plays even when muted (an explicit click), without changing the saved preference. */
+export function speak(q: Pick<QuestionPayload, 'audioUrl' | 'reading'>, { force = false } = {}): void {
   stopSpeech();
-  if (muted) return;
+  if (muted && !force) return;
   if (!q.audioUrl) {
     synthesize(q.reading);
     return;

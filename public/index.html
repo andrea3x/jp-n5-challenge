@@ -36,19 +36,44 @@
             </span>
             <input type="checkbox" role="switch" class="switch" id="speed-scoring" checked>
           </label>
-          <label class="option">
-            <span class="option-text">
-              <strong>Answer feedback</strong>
-              <small>After each click the answer flashes green (right) or red (wrong). Off: players find out only at the end.</small>
-            </span>
-            <input type="checkbox" role="switch" class="switch" id="color-feedback" checked>
-          </label>
+          <div class="option-group">
+            <label class="option">
+              <span class="option-text">
+                <strong>Answer feedback</strong>
+                <small>After each click the answer flashes green (right) or red (wrong). Off: players find out only at the end.</small>
+              </span>
+              <input type="checkbox" role="switch" class="switch" id="color-feedback" checked>
+            </label>
+            <div id="feedback-extra" class="option-extra stacked">
+              <label class="option sub">
+                <span class="option-text">
+                  <strong>Show the correct answer</strong>
+                  <small>If an answer is wrong or time runs out, the right one lights up in green.</small>
+                </span>
+                <input type="checkbox" role="switch" class="switch" id="reveal-correct" checked>
+              </label>
+              <label class="option sub">
+                <span class="option-text">
+                  <strong>Pause longer after a mistake</strong>
+                  <small>Wrong answers stay on screen for 1.5 s instead of 0.7 s, to read the correct one. Pauses never count toward time or score.</small>
+                </span>
+                <input type="checkbox" role="switch" class="switch" id="longer-pause" checked>
+              </label>
+            </div>
+          </div>
           <label class="option">
             <span class="option-text">
               <strong>Pronunciation</strong>
               <small>Each word is read aloud. Players can still mute it on their device.</small>
             </span>
             <input type="checkbox" role="switch" class="switch" id="pronounce" checked>
+          </label>
+          <label class="option">
+            <span class="option-text">
+              <strong>Answer review</strong>
+              <small>After the podium, each player can go through every word: their answer, the correct one, time and points.</small>
+            </span>
+            <input type="checkbox" role="switch" class="switch" id="answer-review" checked>
           </label>
           <div class="option-group">
             <label class="option">

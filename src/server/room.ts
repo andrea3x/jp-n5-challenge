@@ -7,7 +7,9 @@ import {
   type GameSettings,
   type JoinRequest,
   type Phase,
+  type PlayerReview,
   type QuestionPayload,
+  type ReviewResponse,
   type RoomState,
 } from '../shared/protocol.js';
 import { buildQuestions, type Question } from './questions.js';
@@ -196,7 +198,9 @@ export class Room {
     const answer = this.record(player, late ? null : validChoice, limit === null ? elapsed : Math.min(elapsed, limit));
 
     if (!this.settings.colorFeedback) return { ok: true };
-    return { ok: true, correct: answer.correct, correctChoice: q.answer, score: player.score };
+    const result: AnswerResult = { ok: true, correct: answer.correct, score: player.score };
+    if (this.settings.revealCorrect) result.correctChoice = q.answer;
+    return result;
   }
 
   private record(player: Player, choice: number | null, elapsedMs: number): Answer {
@@ -240,6 +244,49 @@ export class Room {
         answered: p.answers.length,
         totalTimeMs: p.totalTimeMs,
       }));
+  }
+
+  /**
+   * The only rule deciding whose answers a player may review.
+   * Today: your own, once the game is over. Widening it (e.g. to everyone) only changes this method.
+   */
+  canViewReview(viewer: Player, target: Player): boolean {
+    return this.phase === 'finished' && this.settings.answerReview && viewer === target;
+  }
+
+  review(viewer: Player, playerIds: string[]): ReviewResponse {
+    if (!this.settings.answerReview) return { ok: false, error: 'Answer review is disabled for this game.' };
+    if (this.phase !== 'finished') return { ok: false, error: 'The review is available when the game is over.' };
+
+    const requested = new Set(playerIds);
+    const players: PlayerReview[] = this.players
+      .filter((p) => requested.has(p.id) && this.canViewReview(viewer, p))
+      .map((p) => ({
+        playerId: p.id,
+        name: p.name,
+        answers: p.answers.map((a, index) => ({
+          index,
+          chosenMeaning: a.choice === null ? null : this.questions[index].choices[a.choice],
+          correct: a.correct,
+          timedOut: a.choice === null,
+          points: a.points,
+          elapsedMs: a.elapsedMs,
+        })),
+      }));
+
+    return {
+      ok: true,
+      review: {
+        questions: this.questions.map((q, index) => ({
+          index,
+          word: q.word,
+          reading: q.reading,
+          correctMeaning: q.choices[q.answer],
+          audioUrl: this.settings.pronounce ? q.audioUrl : null,
+        })),
+        players,
+      },
+    };
   }
 
   /** Back to the lobby with the same settings and the players still connected. */

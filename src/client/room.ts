@@ -7,16 +7,18 @@ import {
   type RoomState,
   type ServerToClientEvents,
 } from '../shared/protocol.js';
+import { $, esc } from './dom.js';
+import { hideReview, renderReview } from './review.js';
 import { isMuted, setMuted, speak, stopSpeech } from './speech.js';
 import { saveName, saveToken, savedHostKey, savedName, savedToken } from './storage.js';
 
 type View = 'connecting' | 'join' | 'lobby' | 'countdown' | 'question' | 'waiting' | 'podium';
 
 const FEEDBACK_MS = 700;
+const MISTAKE_FEEDBACK_MS = 1500;
 const NO_FEEDBACK_MS = 150;
 const COUNTDOWN_FROM = 3;
 
-const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const roomId = decodeURIComponent(location.pathname.split('/').pop() ?? '');
 const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
@@ -61,11 +63,6 @@ function later(fn: () => void, ms: number): void {
   timers.push(window.setTimeout(fn, ms));
 }
 
-function esc(text: string): string {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
 
 const me = () => state?.players.find((p) => p.id === myId);
 const amHost = () => me()?.isHost ?? false;
@@ -134,6 +131,8 @@ socket.on('room', (next) => {
       else requestNext();
       break;
     case 'finished':
+      // Let the last answer's feedback finish; the question flow then shows the podium.
+      if (view === 'question' && locked) return;
       showPodium(next.results ?? []);
       break;
   }
@@ -146,13 +145,19 @@ function showLobby(s: RoomState): void {
   show('lobby', amHost() ? 'Share the link, then press Start when everyone is here!' : 'Waiting for players…');
 
   $<HTMLInputElement>('share-link').value = `${location.origin}/r/${s.roomId}`;
-  const { wordCount, speedScoring, colorFeedback, timerEnabled, timerSeconds, pronounce } = s.settings;
+  const { wordCount, speedScoring, colorFeedback, revealCorrect, longerPauseOnMistake } = s.settings;
+  const { timerEnabled, timerSeconds, pronounce, answerReview } = s.settings;
+  const onOff = (on: boolean) => (on ? 'on' : 'off');
   $('settings-summary').innerHTML = [
     `${wordCount} words`,
-    `Speed bonus: ${speedScoring ? 'on' : 'off'}`,
-    `Feedback colors: ${colorFeedback ? 'on' : 'off'}`,
+    `Speed bonus: ${onOff(speedScoring)}`,
+    `Feedback colors: ${onOff(colorFeedback)}`,
+    ...(colorFeedback
+      ? [`Correct answer shown: ${onOff(revealCorrect)}`, `Longer pause on mistakes: ${onOff(longerPauseOnMistake)}`]
+      : []),
     `Timer: ${timerEnabled ? `${timerSeconds} s` : 'off'}`,
-    `Voice: ${pronounce ? 'on' : 'off'}`,
+    `Voice: ${onOff(pronounce)}`,
+    `Answer review: ${onOff(answerReview)}`,
   ]
     .map((item) => `<li>${item}</li>`)
     .join('');
@@ -201,6 +206,10 @@ function startCountdown(): void {
 
 function requestNext(): void {
   socket.emit('next', (q) => {
+    if (state?.phase === 'finished') {
+      showPodium(state.results ?? []);
+      return;
+    }
     if (state?.phase !== 'playing') return;
     if (q) showQuestion(q);
     else showWaiting(state);
@@ -304,15 +313,15 @@ function submit(choice: number | null): void {
 
     let delay = NO_FEEDBACK_MS;
     if (res.correct !== undefined) {
-      delay = FEEDBACK_MS;
+      delay = !res.correct && state?.settings.longerPauseOnMistake ? MISTAKE_FEEDBACK_MS : FEEDBACK_MS;
       myScore = res.score ?? myScore;
       $('score').textContent = `${myScore} pts`;
       if (choice !== null) {
         buttons[choice].classList.remove('picked');
         buttons[choice].classList.add(res.correct ? 'correct' : 'wrong');
-      } else if (res.correctChoice !== undefined) {
-        buttons[res.correctChoice].classList.add('correct');
       }
+      // Only sent when the master chose to reveal the correct answer.
+      if (!res.correct && res.correctChoice !== undefined) buttons[res.correctChoice].classList.add('correct');
     }
     later(() => {
       if (view === 'question' && current === q) requestNext();
@@ -351,10 +360,13 @@ $('end-game').addEventListener('click', () => {
 // ---------- podium ----------
 
 function showPodium(results: FinalResult[]): void {
+  // Room updates (e.g. someone disconnecting) re-render the podium; fetch the review only once.
+  const firstRender = view !== 'podium';
   clearTimers();
-  stopSpeech();
+  if (firstRender) stopSpeech(); // don't cut off a review word being played
   current = null;
   show('podium', 'Results!');
+  if (firstRender) loadReview();
 
   const places: Array<[FinalResult | undefined, string]> = [
     [results[1], 'second'],
@@ -385,3 +397,18 @@ function showPodium(results: FinalResult[]): void {
 }
 
 $('play-again').addEventListener('click', () => socket.emit('playAgain'));
+
+function loadReview(): void {
+  hideReview();
+  const settings = state?.settings;
+  if (!settings?.answerReview || !myId) return;
+  const playerId = myId;
+  socket.emit('getReview', { playerIds: [playerId] }, (res) => {
+    if (view !== 'podium') return;
+    if (!res.ok) {
+      console.warn('Answer review unavailable:', res.error);
+      return;
+    }
+    renderReview(res.review, playerId, { isViewer: true, showAudio: settings.pronounce });
+  });
+}

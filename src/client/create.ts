@@ -5,21 +5,24 @@ import {
   type CreateRoomResponse,
   type GameSettings,
 } from '../shared/protocol.js';
+import { $ } from './dom.js';
 import { saveHostKey, saveName, savedName } from './storage.js';
 
 const DEFAULT_WORD_COUNT = 20;
 const BASE_POINTS = 100;
 const MAX_SPEED_BONUS = 100;
 
-const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
-
 const form = $<HTMLFormElement>('create-form');
 const nameInput = $<HTMLInputElement>('name');
 const speedScoring = $<HTMLInputElement>('speed-scoring');
 const colorFeedback = $<HTMLInputElement>('color-feedback');
+const revealCorrect = $<HTMLInputElement>('reveal-correct');
+const longerPause = $<HTMLInputElement>('longer-pause');
 const pronounce = $<HTMLInputElement>('pronounce');
+const answerReview = $<HTMLInputElement>('answer-review');
 const timerEnabled = $<HTMLInputElement>('timer-enabled');
 const timerRow = $('timer-row');
+const feedbackExtra = $('feedback-extra');
 const summary = $('summary');
 const errorBox = $('error');
 
@@ -41,9 +44,12 @@ function readSettings(): GameSettings {
     wordCount: checkedValue('wordCount') as GameSettings['wordCount'],
     speedScoring: speedScoring.checked,
     colorFeedback: colorFeedback.checked,
+    revealCorrect: revealCorrect.checked,
+    longerPauseOnMistake: longerPause.checked,
     timerEnabled: timerEnabled.checked,
     timerSeconds: checkedValue('timerSeconds'),
     pronounce: pronounce.checked,
+    answerReview: answerReview.checked,
   };
 }
 
@@ -51,6 +57,7 @@ function readSettings(): GameSettings {
 function renderSummary(): void {
   const s = readSettings();
   timerRow.hidden = !s.timerEnabled;
+  feedbackExtra.hidden = !s.colorFeedback;
   const perAnswer = s.speedScoring ? `${BASE_POINTS} pts + up to ${MAX_SPEED_BONUS} for speed` : `${BASE_POINTS} pts`;
   const max = s.wordCount * (BASE_POINTS + (s.speedScoring ? MAX_SPEED_BONUS : 0));
   summary.textContent = [

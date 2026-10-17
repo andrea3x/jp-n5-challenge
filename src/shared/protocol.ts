@@ -15,9 +15,15 @@ export interface GameSettings {
   wordCount: WordCount;
   speedScoring: boolean;
   colorFeedback: boolean;
+  /** With colorFeedback: also highlight the correct choice after a mistake or timeout. */
+  revealCorrect: boolean;
+  /** With colorFeedback: keep a wrong answer on screen longer (never affects time or score). */
+  longerPauseOnMistake: boolean;
   timerEnabled: boolean;
   timerSeconds: number;
   pronounce: boolean;
+  /** After the game, players can go through their answers. */
+  answerReview: boolean;
 }
 
 export type Phase = 'lobby' | 'playing' | 'finished';
@@ -64,7 +70,10 @@ export interface QuestionPayload {
   remainingMs: number | null;
 }
 
-/** Correctness details are only sent when color feedback is enabled. */
+/**
+ * `correct` and `score` are only sent when color feedback is enabled;
+ * `correctChoice` only when the correct answer is revealed too.
+ */
 export interface AnswerResult {
   ok: boolean;
   error?: string;
@@ -72,6 +81,46 @@ export interface AnswerResult {
   correctChoice?: number;
   score?: number;
 }
+
+// Answer review. Questions are shared by all players and answers are per player, so the same
+// shape serves one player's review today and every player's review if visibility is widened.
+
+export interface ReviewQuestion {
+  index: number;
+  word: string;
+  reading: string;
+  correctMeaning: string;
+  audioUrl: string | null;
+}
+
+export interface ReviewAnswer {
+  index: number;
+  /** null when no choice was made in time. */
+  chosenMeaning: string | null;
+  correct: boolean;
+  timedOut: boolean;
+  points: number;
+  elapsedMs: number;
+}
+
+export interface PlayerReview {
+  playerId: string;
+  name: string;
+  /** In question order; questions without an entry were not answered (game ended early). */
+  answers: ReviewAnswer[];
+}
+
+export interface GameReview {
+  questions: ReviewQuestion[];
+  players: PlayerReview[];
+}
+
+export interface ReviewRequest {
+  /** Whose answers to return; ids the viewer may not see are left out. */
+  playerIds: string[];
+}
+
+export type ReviewResponse = { ok: true; review: GameReview } | { ok: false; error: string };
 
 export interface CreateRoomResponse {
   roomId: string;
@@ -101,6 +150,7 @@ export interface ClientToServerEvents {
   answer: (req: AnswerRequest, ack: (res: AnswerResult) => void) => void;
   endGame: () => void;
   playAgain: () => void;
+  getReview: (req: ReviewRequest, ack: (res: ReviewResponse) => void) => void;
 }
 
 export interface ServerToClientEvents {

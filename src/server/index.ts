@@ -62,9 +62,12 @@ function parseSettings(body: unknown): GameSettings | null {
     wordCount: b.wordCount as WordCount,
     speedScoring: b.speedScoring !== false,
     colorFeedback: b.colorFeedback !== false,
+    revealCorrect: b.revealCorrect !== false,
+    longerPauseOnMistake: b.longerPauseOnMistake !== false,
     timerEnabled: b.timerEnabled !== false,
     timerSeconds,
     pronounce: b.pronounce !== false,
+    answerReview: b.answerReview !== false,
   };
 }
 
@@ -144,6 +147,17 @@ io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents>)
     if (!room || !isHost()) return;
     room.playAgain();
     broadcast(room);
+  });
+
+  socket.on('getReview', (req, ack) => {
+    const player = me();
+    if (typeof ack !== 'function') return;
+    if (!room || !player) {
+      ack({ ok: false, error: 'Not in a game.' });
+      return;
+    }
+    const ids = Array.isArray(req?.playerIds) ? req.playerIds.map(String) : [];
+    ack(room.review(player, ids));
   });
 
   socket.on('disconnect', () => {

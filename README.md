@@ -19,6 +19,7 @@ npm run typecheck
 - A correct answer is worth 100 points. A wrong answer or a timeout is worth 0.
 - With the speed bonus enabled, a correct answer earns up to 100 extra points. The bonus decreases linearly over the time limit, or over 10 s when the timer is off.
 - Ranking: points, then number of correct answers, then total answer time.
+- Answer time is measured from when each word appears, so feedback pauses (including the longer pause after a mistake) never count toward time or score.
 
 ## Vocabulary data
 
