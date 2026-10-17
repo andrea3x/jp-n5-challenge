@@ -2,7 +2,7 @@
 
 Multiplayer JLPT N5 vocabulary quiz (TypeScript, Node.js, Express, Socket.IO).
 
-The host picks the number of words (10–100) and the options, then shares the link. Up to 10 players join a lobby, the host presses Start, and everyone answers the same words at their own pace. The podium appears when everyone has finished, or when the host ends the game early.
+The host picks the number of words (5–100) and the options, then shares the link. Up to 10 players join a lobby, the host presses Start, and everyone answers the same words at their own pace. The podium appears when everyone has finished, or when the host ends the game early.
 
 ## Commands
 

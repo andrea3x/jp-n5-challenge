@@ -1,6 +1,6 @@
 // Types and constants shared between server and client.
 
-export const WORD_COUNTS = [10, 20, 30, 50, 70, 100] as const;
+export const WORD_COUNTS = [5, 10, 20, 30, 50, 100] as const;
 export type WordCount = (typeof WORD_COUNTS)[number];
 
 export const MAX_PLAYERS = 10;

@@ -100,6 +100,32 @@ input[type="text"], input:not([type]), input[type="number"] {
 }
 .hint { font-size: 12px; color: var(--muted); }
 
+/* Collapsible section: a chevron that points right when closed and down when open. */
+.collapsible { display: block; }
+.collapsible > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.collapsible > summary::-webkit-details-marker { display: none; }
+.collapsible > summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s;
+}
+.collapsible[open] > summary::before { transform: rotate(45deg); }
+.collapsible > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
+.collapsible[open] > summary { margin-bottom: 8px; }
+
 /* Setup options: one card per setting, "name + explanation" on the left, switch on the right. */
 .options { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .options > * + * { border-top: 1px solid var(--border); }
